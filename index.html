@@ -6,8 +6,6 @@
     <title>專業打字測驗系統</title>
     <style>
         body { font-family: "Microsoft JhengHei", Arial, sans-serif; background-color: #f0f0f0; margin: 0; padding: 20px; color: #333; }
-        
-        /* ★ 修正 1：把整個容器加寬，從 1000px 改為 1200px */
         .container { max-width: 1200px; margin: 0 auto; }
         
         #setup-screen { background-color: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: relative; text-align: center; }
@@ -43,7 +41,6 @@
         .btn-finish { background-color: #7fb3d5; border: none; padding: 0 30px; font-size: 18px; color: white; cursor: pointer; height: 100%; width: 100%; font-weight: bold; }
         .btn-finish:hover { background-color: #5dade2; }
 
-        /* ★ 修正 4：加入 overflow-x: auto，螢幕太小時允許滾動，不會擠壓變形 */
         .typing-area { background-color: #ffffcc; padding: 30px; font-family: 'Courier New', Courier, monospace; font-size: 28px; min-height: 400px; overflow-x: auto; }
         
         .prep-box { border: 2px dashed #999; padding: 10px; text-align: center; color: #555; background: #fff; margin-bottom: 30px; font-size: 24px; cursor: pointer; font-weight: bold; }
@@ -51,7 +48,6 @@
 
         .line-container { margin-bottom: 20px; min-width: 800px; }
         
-        /* ★ 修正 2：white-space 改為 pre，強制絕對不可換行，保證與輸入框 1:1 對齊 */
         .target-text { color: #333; padding-left: 5px; white-space: pre; letter-spacing: 4px; font-weight: bold; }
         
         .input-text { 
@@ -83,11 +79,7 @@
             cursor: pointer;
             transition: 0.3s;
         }
-        .end-mark-btn:hover {
-            background-color: #e74c3c;
-            color: white;
-            border-color: #e74c3c;
-        }
+        .end-mark-btn:hover { background-color: #e74c3c; color: white; border-color: #e74c3c; }
 
         #result-screen { display: none; background-color: #27ae60; padding: 40px; border-radius: 10px; text-align: center; color: white; margin-top: 20px; }
         #upload-status { margin-top: 20px; font-size: 20px; font-weight: bold; color: #f1c40f; }
@@ -141,7 +133,6 @@
         <div class="typing-area">
             <div class="prep-box" id="prep-box" onclick="startGameTimer()">準備區：點擊此處，或按 Enter 開始計時</div>
             <div id="text-lines-container"></div>
-            
             <button class="end-mark-btn" onclick="forceEndGame()">[ 結 束 ]</button>
         </div>
     </div>
@@ -167,18 +158,14 @@
     const timeSelect = document.getElementById('time-select');
 
     window.onload = function() {
-        fetch(SCRIPT_URL)
-            .then(response => response.json())
-            .then(data => {
-                cloudStudentList = data; 
-                document.getElementById('loading-overlay').style.display = 'none';
-                studentInput.disabled = false; 
-                studentInput.focus();
-            })
-            .catch(error => {
-                document.getElementById('loading-overlay').textContent = "名單下載失敗，將啟用離線測試模式。";
-                setTimeout(() => { document.getElementById('loading-overlay').style.display = 'none'; studentInput.disabled = false; }, 2000);
-            });
+        fetch(SCRIPT_URL).then(r => r.json()).then(data => {
+            cloudStudentList = data; 
+            document.getElementById('loading-overlay').style.display = 'none';
+            studentInput.disabled = false; studentInput.focus();
+        }).catch(e => {
+            document.getElementById('loading-overlay').textContent = "名單下載失敗，將啟用離線模式。";
+            setTimeout(() => { document.getElementById('loading-overlay').style.display = 'none'; studentInput.disabled = false; }, 2000);
+        });
     };
 
     studentInput.addEventListener('input', function() {
@@ -187,12 +174,9 @@
             if(Object.keys(cloudStudentList).length === 0) {
                 confirmedName = "測試員"; nameDisplay.textContent = "⚠️ 離線測試模式"; nameDisplay.style.color = "#e67e22"; enableSetup(); return;
             }
-
             if (cloudStudentList[idVal]) {
                 confirmedName = cloudStudentList[idVal];
-                nameDisplay.textContent = `👋 你好，${confirmedName} 同學！`;
-                nameDisplay.style.color = "#27ae60";
-                enableSetup();
+                nameDisplay.textContent = `👋 你好，${confirmedName} 同學！`; nameDisplay.style.color = "#27ae60"; enableSetup();
             } else { disableSetup(); }
         } else { disableSetup(); }
     });
@@ -200,61 +184,55 @@
     function enableSetup() { startBtn.disabled = false; modeSelect.disabled = false; timeSelect.disabled = false; }
     function disableSetup() { startBtn.disabled = true; modeSelect.disabled = true; timeSelect.disabled = true; confirmedName = ""; nameDisplay.textContent = "查無此人，請檢查班級座號"; nameDisplay.style.color = "#c0392b"; }
 
-    // ★ 修正 3：重新調整題庫，縮短每一行的字數，最高不超過 45 個字元
+    // ★ 修改 1：將文章還原為「連續的長篇段落」，不再手動斷行
     const AI_ARTICLES = [
-        `The quick brown fox jumps over
-the lazy dog. This classic sentence
-contains every letter in the alphabet.
-It is often used to test keyboards.`,
-        
-        `Coding is like solving a large puzzle.
-You must put the right pieces together
-to make the software program work.
-It takes patience and logical thinking!`,
-        
-        `Walking through the forest is relaxing.
-Sunlight shines gently through leaves.
-Listening to the wind helps students
-prepare for a great day of learning.`,
-        
-        `Why do programmers always mix up
-Halloween and Christmas?
-Because Oct 31 equals Dec 25.
-If you get this, you are a true geek!`,
-        
-        `A fast typing speed takes time.
-Do not look at the keyboard.
-Muscle memory will eventually guide
-your fingers to the correct keys.`,
-        
-        `AI is changing the whole world.
-From self-driving cars to smart tech,
-new tools are everywhere. Learning
-to use them effectively is important.`
+        "The quick brown fox jumps over the lazy dog. This classic sentence contains every letter in the English alphabet. It is often used by typists to test keyboards and warm up their fingers before starting a long day of work.",
+        "Computer programming is like solving a giant puzzle. You must carefully put the right logic pieces together to make the software program function correctly. It takes patience, continuous learning, and creative problem-solving skills to succeed.",
+        "Walking through the quiet forest is a relaxing experience. The warm sunlight shines gently through the green canopy. Listening to the wind helps students calm their minds and prepare for another wonderful day of learning in the beautiful nature.",
+        "Why do software developers always mix up Halloween and Christmas? Because Oct 31 is exactly equal to Dec 25 in mathematical bases. If you understand this classic programmer joke, you are definitely well on your way to becoming a true computer geek!",
+        "Developing a fast typing speed takes a lot of time and consistent practice. Try your best not to look at the keyboard while you are typing. Your muscle memory will eventually guide your fingers to find the correct keys automatically.",
+        "Artificial intelligence is rapidly changing the whole world around us. From self-driving cars to smart voice assistants in our homes, new technological tools are everywhere. Learning how to use them effectively is an important skill for the future."
     ];
 
     let targetLines = []; 
     let totalCharsCount = 0; 
     
+    // ★ 新增功能：自動將長篇文章安全地以單字為單位切斷 (設定每行最高 50 字元)
+    function wrapText(text, maxLength) {
+        const words = text.split(' ');
+        let lines = [];
+        let currentLine = "";
+
+        words.forEach(word => {
+            if ((currentLine + word).length > maxLength) {
+                lines.push(currentLine.trim());
+                currentLine = word + " ";
+            } else {
+                currentLine += word + " ";
+            }
+        });
+        if (currentLine.trim().length > 0) lines.push(currentLine.trim());
+        return lines;
+    }
+
     function generateTargetText() {
         const mode = modeSelect.value;
-        let text = "";
-        
         const shuffle = str => str.split('').sort(() => 0.5 - Math.random()).join('');
 
         switch(mode) {
-            case "UPPER": text = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"; break;
-            case "LOWER": text = "abcdefghijklmnopqrstuvwxyz"; break;
-            case "RAND_UPPER": text = shuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZ"); break;
-            case "RAND_LOWER": text = shuffle("abcdefghijklmnopqrstuvwxyz"); break;
+            case "UPPER": targetLines = ["ABCDEFGHIJKLMNOPQRSTUVWXYZ"]; break;
+            case "LOWER": targetLines = ["abcdefghijklmnopqrstuvwxyz"]; break;
+            case "RAND_UPPER": targetLines = [shuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZ")]; break;
+            case "RAND_LOWER": targetLines = [shuffle("abcdefghijklmnopqrstuvwxyz")]; break;
             case "ARTICLE": 
                 const randomIndex = Math.floor(Math.random() * AI_ARTICLES.length);
-                text = AI_ARTICLES[randomIndex];
+                const articleText = AI_ARTICLES[randomIndex];
+                // 使用程式自動切割長篇文章
+                targetLines = wrapText(articleText, 50); 
                 break;
         }
-
-        targetLines = text.split('\n');
-        totalCharsCount = text.replace(/\n/g, '').length; 
+        // 計算總字數：將陣列裡的每一行長度加總
+        totalCharsCount = targetLines.reduce((sum, line) => sum + line.length, 0);
     }
 
     let timeLeft = 0; let totalTime = 0; let timerInterval = null; let isGameRunning = false;
@@ -280,6 +258,7 @@ to use them effectively is important.`
         targetLines.forEach((line, index) => {
             const div = document.createElement('div');
             div.className = 'line-container';
+            // 給 target-text 加入專屬 ID 方便即時改色
             div.innerHTML = `
                 <div class="target-text" id="target-${index}">${line}</div>
                 <input type="text" class="input-text" id="input-${index}" autocomplete="off" disabled spellcheck="false" maxlength="${line.length + 5}">
@@ -293,11 +272,8 @@ to use them effectively is important.`
                 if (e.key === 'Enter') {
                     e.preventDefault();
                     const nextInput = document.getElementById(`input-${index + 1}`);
-                    if (nextInput) {
-                        nextInput.focus();
-                    } else {
-                        forceEndGame();
-                    }
+                    if (nextInput) nextInput.focus();
+                    else forceEndGame();
                 }
             });
         });
@@ -312,7 +288,6 @@ to use them effectively is important.`
     function startGameTimer() {
         if (isGameRunning) return;
         isGameRunning = true;
-        
         document.getElementById('prep-box').style.background = '#e74c3c';
         document.getElementById('prep-box').style.color = 'white';
         document.getElementById('prep-box').textContent = "計時中...";
@@ -322,12 +297,12 @@ to use them effectively is important.`
         if(inputs.length > 0) inputs[0].focus();
 
         timerInterval = setInterval(() => {
-            timeLeft--;
-            updateTopBar();
+            timeLeft--; updateTopBar();
             if (timeLeft <= 0) forceEndGame();
         }, 1000);
     }
 
+    // ★ 修改 2：加入即時變色回饋功能 (灰=對, 紅=錯)
     function calculateScore() {
         if (!isGameRunning) return;
         
@@ -337,19 +312,43 @@ to use them effectively is important.`
 
         targetLines.forEach((targetStr, index) => {
             const inputStr = document.getElementById(`input-${index}`).value;
+            const targetDiv = document.getElementById(`target-${index}`);
+            let formattedTarget = ""; // 用來組裝變色後的 HTML
+            let lineCorrect = 0;
+            let lineWrong = 0;
+
             if (inputStr.length < targetStr.length) allFinished = false; 
 
-            for (let i = 0; i < inputStr.length; i++) {
-                if (i < targetStr.length) {
+            const maxLength = Math.max(targetStr.length, inputStr.length);
+            
+            // 逐字比對，賦予不同顏色標籤
+            for (let i = 0; i < maxLength; i++) {
+                if (i < targetStr.length && i < inputStr.length) {
                     if (inputStr[i] === targetStr[i]) {
-                        currentCorrect++;
+                        // 打對：變淡灰色
+                        formattedTarget += `<span style="color: #bdc3c7;">${targetStr[i]}</span>`;
+                        lineCorrect++;
                     } else {
-                        currentWrong++;
+                        // 打錯：紅底紅字
+                        formattedTarget += `<span style="color: #c0392b; background-color: #fadbd8; border-radius: 3px;">${targetStr[i]}</span>`;
+                        lineWrong++;
                     }
+                } else if (i < targetStr.length) {
+                    // 還沒打到的字：保持原樣
+                    formattedTarget += targetStr[i]; 
                 } else {
-                    currentWrong++; 
+                    // 多打的字：顯示紅色底線
+                    let extraChar = inputStr[i] === ' ' ? '_' : inputStr[i];
+                    formattedTarget += `<span style="color: #c0392b; text-decoration: underline;">${extraChar}</span>`;
+                    lineWrong++;
                 }
             }
+
+            // 即時更新上方的題目畫面
+            targetDiv.innerHTML = formattedTarget;
+            
+            currentCorrect += lineCorrect;
+            currentWrong += lineWrong;
         });
 
         stats.correct = currentCorrect;
@@ -366,7 +365,6 @@ to use them effectively is important.`
     function updateTopBar() {
         const m = Math.floor(Math.max(0, timeLeft) / 60); 
         const s = Math.max(0, timeLeft) % 60;
-        
         const elapsedMinutes = (totalTime - timeLeft) / 60;
         stats.speed = elapsedMinutes > 0 ? Math.round(stats.correct / elapsedMinutes) : 0;
 
@@ -381,9 +379,7 @@ to use them effectively is important.`
         if (!isGameRunning && timeLeft === totalTime) return; 
         if (!isGameRunning && timeLeft > 0) return; 
 
-        clearInterval(timerInterval);
-        isGameRunning = false;
-        
+        clearInterval(timerInterval); isGameRunning = false;
         document.querySelectorAll('.input-text').forEach(input => input.disabled = true);
         
         document.getElementById('game-screen').style.display = 'none';
@@ -401,29 +397,18 @@ to use them effectively is important.`
             <h3 style="color:#f1c40f">系統計算得分：${finalScore}</h3>
         `;
 
-        const data = {
-            studentId: idVal,
-            name: confirmedName,
-            score: finalScore,
-            correctCount: stats.correct
-        };
+        const data = { studentId: idVal, name: confirmedName, score: finalScore, correctCount: stats.correct };
 
         if(Object.keys(cloudStudentList).length === 0) {
             document.getElementById('upload-status').textContent = "⚠️ 離線模式，成績未上傳。";
-            document.getElementById('restart-btn').style.display = "inline-block";
-            return;
+            document.getElementById('restart-btn').style.display = "inline-block"; return;
         }
 
-        fetch(SCRIPT_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
-            body: JSON.stringify(data)
-        })
+        fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(data) })
         .then(() => {
             document.getElementById('upload-status').textContent = "✅ 成績已成功上傳至雲端！";
             document.getElementById('restart-btn').style.display = "inline-block";
-        })
-        .catch(() => {
+        }).catch(() => {
             document.getElementById('upload-status').textContent = "❌ 上傳失敗，請檢查網路連線。";
             document.getElementById('restart-btn').style.display = "inline-block";
         });
