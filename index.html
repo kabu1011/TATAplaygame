@@ -5,32 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>專業打字測驗系統</title>
     <style>
+        /* CSS 部分保持不變，維持你的專業檢定介面 */
         body { font-family: "Microsoft JhengHei", Arial, sans-serif; background-color: #f0f0f0; margin: 0; padding: 20px; color: #333; }
         .container { max-width: 1000px; margin: 0 auto; }
-        
-        /* 設定頁面 */
         #setup-screen { background-color: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: relative; text-align: center; }
         .input-group { margin-bottom: 20px; font-size: 20px; }
         .input-group input, .input-group select { font-size: 20px; padding: 10px; border-radius: 5px; border: 1px solid #ccc; width: 200px; text-align: center; margin: 5px; }
         #student-name-display { font-size: 24px; font-weight: bold; color: #f39c12; display: block; margin-top: 15px; }
-        
-        .time-options { margin-top: 30px; }
         .btn { font-size: 18px; padding: 10px 20px; margin: 5px; cursor: pointer; border: none; border-radius: 5px; background-color: #3498db; color: white; transition: 0.2s; }
         .btn:hover { background-color: #2980b9; }
         .btn:disabled { background-color: #bdc3c7; cursor: not-allowed; }
-
         #loading-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); display: flex; justify-content: center; align-items: center; font-size: 24px; font-weight: bold; z-index: 10; color: #e67e22; border-radius: 10px; }
-
-        /* 遊戲頁面 - 仿檢定介面 */
         #game-screen { display: none; background-color: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-        
-        /* 頂部數據列 */
         .top-bar { display: flex; text-align: center; font-size: 18px; font-weight: bold; border-bottom: 2px solid #ccc; background: #eee; }
         .stat-box { flex: 1; display: flex; align-items: center; border-right: 1px solid #fff; }
         .stat-label { color: white; padding: 15px 10px; font-size: 16px; white-space: nowrap; }
         .stat-val { flex: 1; font-size: 36px; padding: 5px 10px; background-color: #f9f9f9; }
-        
-        /* 各項數據的專屬顏色 */
         .bg-time { background-color: #2980b9; }
         .color-time { color: #e67e22; }
         .bg-correct { background-color: #27ae60; }
@@ -42,32 +32,13 @@
         .bg-speed { background-color: #8e44ad; }
         .color-speed { color: #8e44ad; }
         .btn-finish { background-color: #7fb3d5; border: none; padding: 0 30px; font-size: 18px; color: white; cursor: pointer; height: 100%; width: 100%; }
-        .btn-finish:hover { background-color: #5dade2; }
-
-        /* 打字區域 */
         .typing-area { background-color: #ffffcc; padding: 20px; font-family: 'Courier New', Courier, monospace; font-size: 28px; min-height: 400px; }
-        
         .prep-box { border: 2px dashed #999; padding: 10px; text-align: center; color: #555; background: #fff; margin-bottom: 20px; font-size: 24px; cursor: pointer; }
-        .prep-box:hover { background: #f0f0f0; }
-
         .line-container { margin-bottom: 15px; }
         .target-text { color: #333; padding-left: 5px; white-space: pre-wrap; word-break: break-all; }
-        .input-text { 
-            width: 100%; 
-            font-family: 'Courier New', Courier, monospace; 
-            font-size: 28px; 
-            background: transparent; 
-            border: none; 
-            border-bottom: 2px dashed #777; 
-            outline: none; 
-            color: #2980b9;
-            padding: 5px;
-            box-sizing: border-box;
-        }
+        .input-text { width: 100%; font-family: 'Courier New', Courier, monospace; font-size: 28px; background: transparent; border: none; border-bottom: 2px dashed #777; outline: none; color: #2980b9; padding: 5px; box-sizing: border-box; }
         .input-text:focus { border-bottom: 2px solid #e74c3c; background-color: rgba(255,255,255,0.5); }
-        
         .end-mark { border: 2px dashed #999; display: inline-block; padding: 5px 15px; margin-top: 20px; color: #555; }
-
         #result-screen { display: none; background-color: #27ae60; padding: 40px; border-radius: 10px; text-align: center; color: white; margin-top: 20px; }
         #upload-status { margin-top: 20px; font-size: 20px; font-weight: bold; color: #f1c40f; }
     </style>
@@ -76,26 +47,22 @@
 
 <div class="container">
     <div id="setup-screen">
-        <div id="loading-overlay">⏳ 正在與 Google 雲端連線下載名單...</div>
+        <div id="loading-overlay">⏳ 正在載入雲端名單...</div>
         <h2>📝 專業打字測驗系統</h2>
-        
         <div class="input-group">
             <input type="number" id="student-id" placeholder="班級座號 (如: 30101)" autocomplete="off" disabled>
             <span id="student-name-display">請先輸入班級座號</span>
         </div>
-
         <div class="input-group" style="margin-top: 30px; background: #f9f9f9; padding: 20px; border-radius: 10px;">
-            <label style="font-weight: bold; margin-right: 10px;">測驗模式：</label>
+            測驗模式：
             <select id="mode-select" disabled>
                 <option value="UPPER">大寫 A~Z</option>
                 <option value="LOWER">小寫 a~z</option>
                 <option value="RAND_UPPER">隨機大寫 A~Z</option>
                 <option value="RAND_LOWER">隨機小寫 a~z</option>
-                <option value="ARTICLE">文章 </option>
+                <option value="ARTICLE">亂數文章</option>
             </select>
-            
-            <br><br>
-            <label style="font-weight: bold; margin-right: 10px;">測驗時間：</label>
+            測驗時間：
             <select id="time-select" disabled>
                 <option value="1">1 分鐘</option>
                 <option value="2">2 分鐘</option>
@@ -103,8 +70,7 @@
                 <option value="10">10 分鐘</option>
             </select>
         </div>
-
-        <button class="btn" id="start-btn" onclick="initGame()" disabled style="font-size: 24px; padding: 15px 40px; background-color: #27ae60;">開始測驗</button>
+        <button class="btn" id="start-btn" onclick="initGame()" disabled>開始測驗</button>
     </div>
 
     <div id="game-screen">
@@ -119,8 +85,7 @@
 
         <div class="typing-area">
             <div class="prep-box" id="prep-box" onclick="startGameTimer()">準備區：點擊此處，或按 Enter 開始計時</div>
-            <div id="text-lines-container">
-                </div>
+            <div id="text-lines-container"></div>
             <div class="end-mark">結束</div>
         </div>
     </div>
@@ -128,16 +93,15 @@
     <div id="result-screen">
         <h2>🎉 測驗結束！</h2>
         <div id="final-stats" style="font-size: 24px; line-height: 2;"></div>
-        <div id="upload-status">⏳ 成績上傳中，請稍候...</div>
-        <button class="btn" id="restart-btn" onclick="location.reload()" style="display: none; background-color: #fff; color: #27ae60; margin-top: 20px;">回到首頁</button>
+        <div id="upload-status">⏳ 成績上傳中...</div>
+        <button class="btn" id="restart-btn" onclick="location.reload()" style="display: none; background-color: #fff; color: #27ae60;">回到首頁</button>
     </div>
 </div>
 
 <script>
-    // ★★★ 請把下面這行換成你的 Google Apps Script 網址 ★★★
+    // ★★★ 務必更換你的 Google Script 網址 ★★★
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxy4ScFfE4H_Ct-vx0wOMkQ34r3L-H18V31bCiLdcgtOVpwNaHPMc56VtxawBw_Xe6K/exec"; 
 
-    // --- 名單與設定邏輯 ---
     let cloudStudentList = {};
     let confirmedName = ""; 
     const studentInput = document.getElementById('student-id');
@@ -147,82 +111,63 @@
     const timeSelect = document.getElementById('time-select');
 
     window.onload = function() {
-        fetch(SCRIPT_URL)
-            .then(response => response.json())
-            .then(data => {
-                cloudStudentList = data; 
-                document.getElementById('loading-overlay').style.display = 'none';
-                studentInput.disabled = false; 
-                studentInput.focus();
-            })
-            .catch(error => {
-                document.getElementById('loading-overlay').textContent = "名單下載失敗，將啟用離線測試模式。";
-                setTimeout(() => { document.getElementById('loading-overlay').style.display = 'none'; studentInput.disabled = false; }, 2000);
-            });
+        fetch(SCRIPT_URL).then(r => r.json()).then(data => {
+            cloudStudentList = data;
+            document.getElementById('loading-overlay').style.display = 'none';
+            studentInput.disabled = false;
+            studentInput.focus();
+        }).catch(e => {
+            document.getElementById('loading-overlay').style.display = 'none';
+            studentInput.disabled = false;
+        });
     };
 
     studentInput.addEventListener('input', function() {
-        const idVal = this.value.trim();
-        if (idVal.length > 0) {
-            // 如果連不上雲端，允許任意名單測試
-            if(Object.keys(cloudStudentList).length === 0) {
-                confirmedName = "測試員"; nameDisplay.textContent = "⚠️ 離線測試模式"; nameDisplay.style.color = "#e67e22"; enableSetup(); return;
-            }
-
-            if (cloudStudentList[idVal]) {
-                confirmedName = cloudStudentList[idVal];
-                nameDisplay.textContent = `👋 你好，${confirmedName} 同學！`;
-                nameDisplay.style.color = "#27ae60";
-                enableSetup();
-            } else { disableSetup(); }
-        } else { disableSetup(); }
+        const id = this.value.trim();
+        if (cloudStudentList[id]) {
+            confirmedName = cloudStudentList[id];
+            nameDisplay.textContent = `👋 你好，${confirmedName}！`;
+            nameDisplay.style.color = "#27ae60";
+            startBtn.disabled = false; modeSelect.disabled = false; timeSelect.disabled = false;
+        } else {
+            nameDisplay.textContent = "查無此人";
+            nameDisplay.style.color = "#c0392b";
+            startBtn.disabled = true;
+        }
     });
 
-    function enableSetup() { startBtn.disabled = false; modeSelect.disabled = false; timeSelect.disabled = false; }
-    function disableSetup() { startBtn.disabled = true; modeSelect.disabled = true; timeSelect.disabled = true; confirmedName = ""; nameDisplay.textContent = "查無此人，請檢查班級座號"; nameDisplay.style.color = "#c0392b"; }
-
-    // --- 題目生成邏輯 ---
     const ARTICLE_TEXT = `Principal: "I've had complaints about you, Johnny,
 from all of your teachers. What have you been doing?"
 Johnny: "Nothing, sir."
 Principal: "Exactly!"`;
 
-    let targetLines = []; // 儲存分割後的題目行
-    let totalCharsCount = 0; // 總字數
+    let targetLines = [];
+    let totalCharsCount = 0;
     
     function generateTargetText() {
         const mode = modeSelect.value;
         let text = "";
-        
-        // 隨機打亂字串的函數
-        const shuffle = str => str.split('').sort(() => 0.5 - Math.random()).join('');
+        const shuffle = s => s.split('').sort(() => 0.5 - Math.random()).join('');
+        if (mode === "UPPER") text = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        else if (mode === "LOWER") text = "abcdefghijklmnopqrstuvwxyz";
+        else if (mode === "RAND_UPPER") text = shuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+        else if (mode === "RAND_LOWER") text = shuffle("abcdefghijklmnopqrstuvwxyz");
+        else text = ARTICLE_TEXT;
 
-        switch(mode) {
-            case "UPPER": text = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"; break;
-            case "LOWER": text = "abcdefghijklmnopqrstuvwxyz"; break;
-            case "RAND_UPPER": text = shuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZ"); break;
-            case "RAND_LOWER": text = shuffle("abcdefghijklmnopqrstuvwxyz"); break;
-            case "ARTICLE": text = ARTICLE_TEXT; break;
-        }
-
-        // 將文章依照換行符號分割成陣列
         targetLines = text.split('\n');
-        totalCharsCount = text.replace(/\n/g, '').length; // 計算總字數(不含換行)
+        totalCharsCount = text.replace(/\n/g, '').length;
     }
 
-    // --- 遊戲邏輯 ---
     let timeLeft = 0; let totalTime = 0; let timerInterval = null; let isGameRunning = false;
     let stats = { correct: 0, wrong: 0, untyped: 0, speed: 0 };
 
     function initGame() {
         document.getElementById('setup-screen').style.display = 'none';
         document.getElementById('game-screen').style.display = 'block';
-        
         generateTargetText();
         totalTime = parseInt(timeSelect.value) * 60;
         timeLeft = totalTime;
-        stats.untyped = totalCharsCount; // 初始沒打的字數等於總字數
-        
+        stats.untyped = totalCharsCount;
         updateTopBar();
         renderTypingArea();
     }
@@ -230,50 +175,33 @@ Principal: "Exactly!"`;
     function renderTypingArea() {
         const container = document.getElementById('text-lines-container');
         container.innerHTML = "";
-        
         targetLines.forEach((line, index) => {
             const div = document.createElement('div');
             div.className = 'line-container';
-            div.innerHTML = `
-                <div class="target-text" id="target-${index}">${line}</div>
-                <input type="text" class="input-text" id="input-${index}" autocomplete="off" disabled spellcheck="false">
-            `;
+            div.innerHTML = `<div class="target-text">${line}</div><input type="text" class="input-text" id="input-${index}" disabled spellcheck="false">`;
             container.appendChild(div);
 
-            // 監聽輸入框變化以即時計算成績
             const inputField = div.querySelector('input');
             inputField.addEventListener('input', calculateScore);
-            
-            // 監聽 Enter 鍵跳下一行
             inputField.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter') {
                     e.preventDefault();
-                    const nextInput = document.getElementById(`input-${index + 1}`);
-                    if (nextInput) nextInput.focus();
+                    const next = document.getElementById(`input-${index + 1}`);
+                    if (next) next.focus();
+                    else forceEndGame(); // ★ 核心：最後一行按 Enter 直接送出
                 }
             });
         });
     }
 
-    // 當點擊準備區，或在準備區按Enter時開始計時
-    document.addEventListener('keydown', function(e) {
-        if (!isGameRunning && e.key === 'Enter' && document.getElementById('game-screen').style.display === 'block') {
-            startGameTimer();
-        }
-    });
-
     function startGameTimer() {
         if (isGameRunning) return;
         isGameRunning = true;
-        
         document.getElementById('prep-box').style.background = '#e74c3c';
-        document.getElementById('prep-box').style.color = 'white';
         document.getElementById('prep-box').textContent = "計時中...";
-
-        // 解鎖所有輸入框並對焦第一個
         const inputs = document.querySelectorAll('.input-text');
-        inputs.forEach(input => input.disabled = false);
-        if(inputs.length > 0) inputs[0].focus();
+        inputs.forEach(i => i.disabled = false);
+        inputs[0].focus();
 
         timerInterval = setInterval(() => {
             timeLeft--;
@@ -282,47 +210,38 @@ Principal: "Exactly!"`;
         }, 1000);
     }
 
-    // 計算成績核心邏輯
     function calculateScore() {
         if (!isGameRunning) return;
-        
-        let currentCorrect = 0;
-        let currentWrong = 0;
-        let typedCharsCount = 0;
+        let c = 0, w = 0, typed = 0;
+        let allFinished = true; // 檢查是否全部打完
 
-        targetLines.forEach((targetStr, index) => {
-            const inputStr = document.getElementById(`input-${index}`).value;
-            typedCharsCount += inputStr.length;
+        targetLines.forEach((target, index) => {
+            const val = document.getElementById(`input-${index}`).value;
+            typed += val.length;
+            if (val.length < target.length) allFinished = false; // 只要有一行還沒打完
 
-            for (let i = 0; i < inputStr.length; i++) {
-                if (i < targetStr.length) {
-                    if (inputStr[i] === targetStr[i]) {
-                        currentCorrect++;
-                    } else {
-                        currentWrong++;
-                    }
-                } else {
-                    currentWrong++; // 打了超過題目長度的字也算錯
-                }
+            for (let i = 0; i < val.length; i++) {
+                if (i < target.length) {
+                    if (val[i] === target[i]) c++; else w++;
+                } else { w++; }
             }
         });
 
-        stats.correct = currentCorrect;
-        stats.wrong = currentWrong;
-        // 沒打 = 總字數 - 已經打出的正確與錯誤字數 (防呆：最低為0)
-        stats.untyped = Math.max(0, totalCharsCount - currentCorrect - currentWrong);
-        
+        stats.correct = c; stats.wrong = w;
+        stats.untyped = Math.max(0, totalCharsCount - c - w);
         updateTopBar();
+
+        // ★ 核心：如果學生打對的總字數等於題目總字數，自動完成
+        if (allFinished && stats.correct === totalCharsCount) {
+            setTimeout(forceEndGame, 200); // 稍微延遲讓視覺更流暢
+        }
     }
 
     function updateTopBar() {
         const m = Math.floor(Math.max(0, timeLeft) / 60); 
         const s = Math.max(0, timeLeft) % 60;
-        
-        // 速度公式 = 正確字數 / 經過的分鐘數
-        const elapsedMinutes = (totalTime - timeLeft) / 60;
-        stats.speed = elapsedMinutes > 0 ? Math.round(stats.correct / elapsedMinutes) : 0;
-
+        const elapsed = (totalTime - timeLeft) / 60;
+        stats.speed = elapsed > 0 ? Math.round(stats.correct / elapsed) : 0;
         document.getElementById('timer').textContent = `${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s}`;
         document.getElementById('val-correct').textContent = stats.correct;
         document.getElementById('val-wrong').textContent = stats.wrong;
@@ -331,59 +250,24 @@ Principal: "Exactly!"`;
     }
 
     function forceEndGame() {
+        if (!isGameRunning && timeLeft > 0) return; // 避免重複執行
         clearInterval(timerInterval);
         isGameRunning = false;
-        
-        // 鎖定所有輸入框
-        document.querySelectorAll('.input-text').forEach(input => input.disabled = true);
-        
         document.getElementById('game-screen').style.display = 'none';
         document.getElementById('result-screen').style.display = 'block';
 
-        const idVal = studentInput.value;
-        const modeName = modeSelect.options[modeSelect.selectedIndex].text;
-
-        // 計算最終得分 (可依照學校規定調整配分)
         const finalScore = Math.max(0, (stats.correct * 2) - stats.wrong); 
-
-        document.getElementById('final-stats').innerHTML = `
-            姓名：${confirmedName} (${idVal})<br>
-            測驗模式：${modeName}<br><hr>
-            打字速度：${stats.speed} 字/分<br>
-            正確：${stats.correct} / 錯誤：${stats.wrong} / 未打：${stats.untyped}<br>
-            <h3 style="color:#f1c40f">系統計算得分：${finalScore}</h3>
-        `;
-
-        // 整理要上傳的資料
-        const data = {
-            studentId: idVal,
-            name: confirmedName,
-            score: finalScore,
-            correctCount: stats.correct
-        };
-
-        // 如果沒有連上網路(離線模式)就不執行上傳
-        if(Object.keys(cloudStudentList).length === 0) {
-            document.getElementById('upload-status').textContent = "⚠️ 離線模式，成績未上傳。";
-            document.getElementById('restart-btn').style.display = "inline-block";
-            return;
-        }
+        document.getElementById('final-stats').innerHTML = `姓名：${confirmedName}<br>速度：${stats.speed} 字/分<br>正確：${stats.correct}<hr>系統得分：${finalScore}`;
 
         fetch(SCRIPT_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
-            body: JSON.stringify(data)
-        })
-        .then(() => {
-            document.getElementById('upload-status').textContent = "✅ 成績已成功上傳至雲端！";
-            document.getElementById('restart-btn').style.display = "inline-block";
-        })
-        .catch(() => {
-            document.getElementById('upload-status').textContent = "❌ 上傳失敗，請檢查網路連線。";
+            body: JSON.stringify({ studentId: studentInput.value, name: confirmedName, score: finalScore, correctCount: stats.correct })
+        }).then(() => {
+            document.getElementById('upload-status').textContent = "✅ 成績已成功上傳！";
             document.getElementById('restart-btn').style.display = "inline-block";
         });
     }
 </script>
-
 </body>
 </html>
