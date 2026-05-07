@@ -6,7 +6,9 @@
     <title>專業打字測驗系統</title>
     <style>
         body { font-family: "Microsoft JhengHei", Arial, sans-serif; background-color: #f0f0f0; margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 1000px; margin: 0 auto; }
+        
+        /* ★ 修正 1：把整個容器加寬，從 1000px 改為 1200px */
+        .container { max-width: 1200px; margin: 0 auto; }
         
         #setup-screen { background-color: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: relative; text-align: center; }
         .input-group { margin-bottom: 20px; font-size: 20px; }
@@ -41,14 +43,17 @@
         .btn-finish { background-color: #7fb3d5; border: none; padding: 0 30px; font-size: 18px; color: white; cursor: pointer; height: 100%; width: 100%; font-weight: bold; }
         .btn-finish:hover { background-color: #5dade2; }
 
-        .typing-area { background-color: #ffffcc; padding: 30px; font-family: 'Courier New', Courier, monospace; font-size: 28px; min-height: 400px; }
+        /* ★ 修正 4：加入 overflow-x: auto，螢幕太小時允許滾動，不會擠壓變形 */
+        .typing-area { background-color: #ffffcc; padding: 30px; font-family: 'Courier New', Courier, monospace; font-size: 28px; min-height: 400px; overflow-x: auto; }
         
         .prep-box { border: 2px dashed #999; padding: 10px; text-align: center; color: #555; background: #fff; margin-bottom: 30px; font-size: 24px; cursor: pointer; font-weight: bold; }
         .prep-box:hover { background: #f0f0f0; }
 
-        .line-container { margin-bottom: 20px; }
+        .line-container { margin-bottom: 20px; min-width: 800px; }
         
-        .target-text { color: #333; padding-left: 5px; white-space: pre-wrap; word-break: break-all; letter-spacing: 4px; font-weight: bold; }
+        /* ★ 修正 2：white-space 改為 pre，強制絕對不可換行，保證與輸入框 1:1 對齊 */
+        .target-text { color: #333; padding-left: 5px; white-space: pre; letter-spacing: 4px; font-weight: bold; }
+        
         .input-text { 
             width: 100%; 
             font-family: 'Courier New', Courier, monospace; 
@@ -195,44 +200,37 @@
     function enableSetup() { startBtn.disabled = false; modeSelect.disabled = false; timeSelect.disabled = false; }
     function disableSetup() { startBtn.disabled = true; modeSelect.disabled = true; timeSelect.disabled = true; confirmedName = ""; nameDisplay.textContent = "查無此人，請檢查班級座號"; nameDisplay.style.color = "#c0392b"; }
 
-    // ★★★ AI 生成的文章題庫 ★★★
-    // 每篇文章大約 150-250 字元，包含大小寫與標點符號，非常適合測驗
+    // ★ 修正 3：重新調整題庫，縮短每一行的字數，最高不超過 45 個字元
     const AI_ARTICLES = [
-        // 經典打字測驗句
-        `The quick brown fox jumps over the lazy dog.
-This classic sentence contains every letter
-in the English alphabet. It is often used
-to test typewriters and computer keyboards.`,
+        `The quick brown fox jumps over
+the lazy dog. This classic sentence
+contains every letter in the alphabet.
+It is often used to test keyboards.`,
         
-        // 程式設計小常識
         `Coding is like solving a large puzzle.
 You must put the right pieces together
 to make the software program work.
-It takes patience, logic, and practice!`,
+It takes patience and logical thinking!`,
         
-        // 大自然與校園 (微微呼應森林學校的氛圍)
-        `Walking through the quiet forest is relaxing.
-Sunlight shines gently through the green leaves.
-Listening to the wind helps students calm down
-and prepare for another great day of learning.`,
+        `Walking through the forest is relaxing.
+Sunlight shines gently through leaves.
+Listening to the wind helps students
+prepare for a great day of learning.`,
         
-        // 電腦科學冷知識
         `Why do programmers always mix up
-Halloween and Christmas? Because Oct 31
-equals Dec 25. If you understand this math joke,
-you are definitely a true computer geek!`,
+Halloween and Christmas?
+Because Oct 31 equals Dec 25.
+If you get this, you are a true geek!`,
         
-        // 練習方法小叮嚀
-        `A fast typing speed takes time to develop.
-Do not look at the keyboard while you type.
-Muscle memory will eventually guide your
-fingers to find the correct keys automatically.`,
+        `A fast typing speed takes time.
+Do not look at the keyboard.
+Muscle memory will eventually guide
+your fingers to the correct keys.`,
         
-        // 科技發展
-        `Artificial intelligence is changing the world.
-From self-driving cars to smart voice assistants,
-new tech is everywhere. Learning to use
-these modern tools effectively is very important.`
+        `AI is changing the whole world.
+From self-driving cars to smart tech,
+new tools are everywhere. Learning
+to use them effectively is important.`
     ];
 
     let targetLines = []; 
@@ -250,7 +248,6 @@ these modern tools effectively is very important.`
             case "RAND_UPPER": text = shuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZ"); break;
             case "RAND_LOWER": text = shuffle("abcdefghijklmnopqrstuvwxyz"); break;
             case "ARTICLE": 
-                // ★ 從題庫中隨機挑選一篇文章
                 const randomIndex = Math.floor(Math.random() * AI_ARTICLES.length);
                 text = AI_ARTICLES[randomIndex];
                 break;
@@ -285,7 +282,7 @@ these modern tools effectively is very important.`
             div.className = 'line-container';
             div.innerHTML = `
                 <div class="target-text" id="target-${index}">${line}</div>
-                <input type="text" class="input-text" id="input-${index}" autocomplete="off" disabled spellcheck="false">
+                <input type="text" class="input-text" id="input-${index}" autocomplete="off" disabled spellcheck="false" maxlength="${line.length + 5}">
             `;
             container.appendChild(div);
 
