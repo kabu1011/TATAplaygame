@@ -190,39 +190,73 @@
     function enableSetup() { startBtn.disabled = false; modeSelect.disabled = false; timeSelect.disabled = false; }
     function disableSetup() { startBtn.disabled = true; modeSelect.disabled = true; timeSelect.disabled = true; confirmedName = ""; nameDisplay.textContent = "查無此人，請檢查班級座號"; nameDisplay.style.color = "#c0392b"; }
 
+    // ==========================================
+    // 📚 雙語龐大題庫區
+    // ==========================================
     const EN_ARTICLES = [
         "The quick brown fox jumps over the lazy dog. This classic sentence contains every letter in the English alphabet.",
         "Computer programming is like solving a giant puzzle. You must carefully put the right logic pieces together to make the software function.",
         "Artificial intelligence is rapidly changing the whole world around us. From self-driving cars to smart voice assistants in our homes.",
         "A fast typing speed takes a lot of time and consistent practice. Try your best not to look at the keyboard while you are typing.",
-        "Walking through the quiet forest is a relaxing experience. The warm sunlight shines gently through the green canopy."
+        "Walking through the quiet forest is a relaxing experience. The warm sunlight shines gently through the green canopy.",
+        "Teamwork is the key to achieving great goals. Everyone has their own unique strengths to contribute to the project.",
+        "Reading books can open up new worlds of imagination. It allows you to travel through time and space without leaving your room.",
+        "Learning a new skill requires patience and dedication. Do not be afraid to make mistakes, because they help you grow stronger.",
+        "The internet connects millions of computers globally. It allows us to share information, communicate instantly, and learn anything.",
+        "Education is the most powerful weapon which you can use to change the world. Always stay curious and never stop learning."
     ];
 
-    // ★ 擴充版：中文優美文章題庫 (10篇)
     const ZH_ARTICLES = [
         "早晨的陽光穿透樹葉，灑在森林小學的教室裡。微風輕輕吹過，伴隨著蟲鳴鳥叫，讓學生們能在充滿大自然氣息的環境中，靜下心來展開一天的學習旅程。",
-        "學習程式設計就像是在施展魔法。透過迴圈與變數的組合，我們能讓電腦聽從指令，甚至創造出有趣的小遊戲。只要具備清晰的邏輯，每個人都能成為優秀的創作者。",
-        "古希臘哲學家蘇格拉底曾說過，我唯一知道的事，就是我什麼都不知道。保持一顆好奇與謙卑的心去探索世界，不斷提出問題，才是獲取真實知識與智慧的最佳途徑。",
-        "在人工智慧快速發展的時代，科技正在改變我們的生活方式。從自動駕駛到智慧教學平台，未來的世界充滿無限可能。我們應該擁抱新技術，並學習如何善用它們。",
-        "閱讀是一扇通往世界的窗戶。透過書本，我們可以跨越時空的限制，與古今中外的智者進行對話。在字裡行間尋找智慧的結晶，豐富我們的心靈與視野。",
-        "每個人都會有害怕的事情，比如黑暗或是高處。克服恐懼的第一步是了解它，想想為什麼會害怕。接著可以試著慢慢接觸這些事情，勇敢面對恐懼會讓你變得更加自信。",
-        "哪怕前方的道路佈滿荊棘，只要心中有光，就能照亮未來的方向。每一次的失敗，都是通往成功的一塊墊腳石。勇敢面對挑戰，你將會發現一個更強大的自己。",
+        "在這片美麗的校園中，我們學會了與自然共存。看著操場旁的綠樹隨著四季變換色彩，春天的嫩綠與秋天的金黃，都是大自然給予我們最棒的視覺饗宴。",
+        "漫步在生態步道上，仔細觀察周遭的花草樹木。你會發現每一片葉子都有獨特的紋理，每一朵花都散發著迷人的芳香，這就是生命最純粹的美麗。",
         "搭上神隱少女的神秘列車，或是跟著龍貓在夜晚的森林裡翱翔。豐富的想像力是創新的泉源，它能帶領我們跨越現實的框架，看見更多不一樣的奇妙世界。",
+        "只要保有純真善良的心，用心去感受大自然的美好，或許有一天，你也能在寧靜的午後，遇見屬於自己的奇蹟與守護精靈，展開一段不可思議的冒險。",
+        "天空之城的傳說告訴我們，科技雖然強大，但不能失去對生命的尊重。唯有將科技與自然和平結合，人類的未來才能像那座漂浮的城市一樣，永遠閃耀著光芒。",
+        "學習程式設計就像是在施展魔法。透過迴圈與變數的組合，我們能讓電腦聽從指令，甚至創造出有趣的小遊戲。只要具備清晰的邏輯，每個人都能成為優秀的創作者。",
+        "在人工智慧快速發展的時代，科技正在改變我們的生活方式。從自動駕駛到智慧教學平台，未來的世界充滿無限可能。我們應該擁抱新技術，並學習如何善用它們。",
+        "網路世界就像是一座無邊無際的虛擬城市，資料在光纖中以光速穿梭。學習網路架構與路由設定，能讓我們在這個數位時代中，建立起穩定且安全的溝通橋樑。",
+        "面對日新月異的科技浪潮，未來的教育將不再只是單向的知識傳遞，而是培養解決問題與創新思考的能力。學會與科技協作，把它當作得力助手，創造無限可能。",
+        "運算思維是現代人必備的技能。將複雜的問題拆解成幾個小步驟，並找出其中的規律與模式，這不僅能用來寫程式，更能幫助我們解決生活中各種棘手的挑戰。",
+        "古希臘哲學家蘇格拉底曾說過，我唯一知道的事，就是我什麼都不知道。保持一顆好奇與謙卑的心去探索世界，不斷提出問題，才是獲取真實知識與智慧的最佳途徑。",
+        "哲學家康德曾說，有兩樣東西讓我們心生敬畏，一是頭頂浩瀚的星空，二是心中的道德律。在追求科技進步的同時，我們也不應忘記培養良好的品格與倫理觀念。",
+        "柏拉圖的洞穴理論告訴我們，不要被眼前的表象所迷惑。教育的目的，就是要引導人們走出黑暗的洞穴，看見真實世界的陽光。勇敢追求真理，才能擁有更廣闊的視野。",
+        "真正的勇敢不是從不害怕，而是在恐懼面前依然選擇前進。每一次的挫折都是一次成長的契機，只要我們願意從失敗中學習，最終必能迎來屬於自己的光明。",
+        "誠實與信用是人際交往的基石。建立信任需要很長的時間，但毀壞它卻只需要一瞬間。無論在學校還是未來的職場上，做一個信守承諾的人，才能贏得他人的尊重。",
+        "每個人都有自己獨特的學習節奏，就像花園裡開著不同顏色的花朵。我們應該用包容與同理心去理解他人的困難，給予耐心的陪伴與支持。溫暖的鼓勵能激發巨大潛力。",
+        "學會傾聽是建立良好溝通的第一步。當朋友遇到挫折時，有時候他們需要的不是長篇大論的建議，而是一個願意安靜陪伴、真心理解他們感受的人。",
+        "每個人都會有害怕的事情，比如黑暗或是高處。克服恐懼的第一步是了解它，接著可以試著慢慢接觸這些事情，朋友的陪伴與家人的鼓勵，會讓你變得更加自信。",
+        "這個世界因為多樣性而顯得豐富美麗。不要戴著有色眼鏡去評斷別人，試著站在對方的角度思考問題，你會發現，理解與包容能化解許多不必要的衝突與誤會。",
+        "閱讀是一扇通往世界的窗戶。透過書本，我們可以跨越時空的限制，與古今中外的智者進行對話。在字裡行間尋找智慧的結晶，豐富我們的心靈與視野。",
+        "時間就像一條奔流不息的河，過去了就不會再回來。學會做好時間管理，把每天的任務安排得井然有序。珍惜每一分每一秒，不要讓寶貴的青春在猶豫中白白流逝。",
+        "哪怕前方的道路佈滿荊棘，只要心中有光，就能照亮未來的方向。每一次的失敗，都是通往成功的一塊墊腳石。勇敢面對挑戰，你將會發現一個更強大的自己。",
         "團隊合作是達成偉大目標的關鍵。每個人都有自己獨特的優點與專長，像拼圖一樣互補不足。學會傾聽他人的意見，包容不同的想法，才能發揮出一加一大於二的力量。",
-        "時間就像一條奔流不息的河，過去了就不會再回來。學會做好時間管理，把每天的任務安排得井然有序。珍惜每一分每一秒，不要讓寶貴的青春在猶豫中白白流逝。"
+        "舉辦一場完美的校園活動，需要全體師生的共同努力與周密的行政規劃。從場地佈置到流程安排，每一個細節都考驗著團隊的默契。當看到大家臉上的笑容，一切都值得了。",
+        "學習不僅僅是為了應付考試，更是為了充實自我。當你將知識內化為自己的力量，並且能夠靈活運用在日常生活中，這才是教育真正賦予我們的寶貴財富。",
+        "保持運動的習慣，不僅能讓身體保持健康，還能釋放壓力、讓大腦更加清晰。在操場上盡情奔跑、流下汗水，是校園生活中最充滿活力與青春氣息的美好時光。",
+        "寫作是整理思緒的最佳方式。透過文字，我們可以將腦海中抽象的想法具體化，記錄下生活中的點點滴滴，並與他人分享我們對這個世界的觀察與深刻感悟。",
+        "每一次的畢業，都是人生下一個階段的起點。帶著師長們的祝福與同學間的美好回憶，勇敢地向未知的未來邁進。無論遇到什麼困難，都不要忘記當初那顆純粹的心。",
+        "學會感恩，是快樂的秘訣。感謝父母的養育之恩，感謝老師的諄諄教誨，感謝朋友們的陪伴與支持。懂得珍惜身邊擁有的一切，心靈就會充滿溫暖與陽光。"
     ];
 
-    // ★ 新增：中文隨機詞彙庫 (雙字詞與四字成語混合)
     const ZH_WORDS = [
         "學習", "成長", "努力", "堅持", "未來", "夢想", "希望", "挑戰", "成功", "自信",
         "科技", "創新", "程式", "設計", "網路", "雲端", "資料", "邏輯", "系統", "資訊",
         "自然", "森林", "海洋", "陽光", "微風", "宇宙", "星空", "山川", "河流", "生態",
-        "行雲流水", "腳踏實地", "百折不撓", "聚沙成塔", "持之以恆", "溫故知新", "精益求精", "學無止境"
+        "教育", "智慧", "品格", "同理", "包容", "尊重", "溝通", "合作", "團隊", "默契",
+        "想像", "創意", "藝術", "音樂", "文學", "閱讀", "書本", "知識", "真理", "探索",
+        "勇敢", "堅強", "感恩", "快樂", "熱情", "青春", "回憶", "友誼", "陪伴", "支持",
+        "行雲流水", "腳踏實地", "百折不撓", "聚沙成塔", "持之以恆", "溫故知新", "精益求精", "學無止境",
+        "日新月異", "無遠弗屆", "千變萬化", "豁然開朗", "井然有序", "分秒必爭", "發揮所長", "相輔相成",
+        "包羅萬象", "海闊天空", "飲水思源", "鵬程萬里", "登高望遠", "孜孜不倦", "見賢思齊", "厚積薄發"
     ];
 
     let targetLines = []; 
     let totalCharsCount = 0; 
     
+    // ==========================================
+    // ⚙️ 斷行與字串組合邏輯
+    // ==========================================
     function wrapEnText(text, maxLength) {
         const words = text.split(' ');
         let lines = []; let currentLine = "";
@@ -243,17 +277,35 @@
         return lines;
     }
 
-    // ★ 新增：隨機生成順暢的中文詞彙短句
-    function generateVocabText() {
+    // ★ 產生巨量隨機詞彙 (確保字數破千，應付 10 分鐘測驗)
+    function generateMassiveVocabText(targetLength = 1000) {
         let text = "";
-        // 生成大約 60 個字的長度，以符合一般測驗需求
-        for (let i = 0; i < 15; i++) {
+        while (text.length < targetLength) {
             let word1 = ZH_WORDS[Math.floor(Math.random() * ZH_WORDS.length)];
             let word2 = ZH_WORDS[Math.floor(Math.random() * ZH_WORDS.length)];
-            // 讓詞彙組合起來像是一句通順的話
             text += `${word1}，${word2}。`; 
         }
         return text;
+    }
+
+    // ★ 產生巨量文章 (將題庫洗牌後拼在一起，確保字數破千)
+    function generateMassiveArticle(articlesArray, targetLength) {
+        let text = "";
+        // 陣列洗牌打亂
+        let shuffled = [...articlesArray].sort(() => 0.5 - Math.random());
+        let idx = 0;
+        while (text.length < targetLength) {
+            text += shuffled[idx % shuffled.length] + " ";
+            idx++;
+        }
+        return text.trim();
+    }
+
+    // 產生大量重複的英文字母
+    function generateMassiveLetters(str, times) {
+        let arr = [];
+        for (let i = 0; i < times; i++) arr.push(str);
+        return arr.join(' ');
     }
 
     function generateTargetText() {
@@ -261,24 +313,40 @@
         const shuffle = str => str.split('').sort(() => 0.5 - Math.random()).join('');
 
         switch(mode) {
-            case "UPPER": targetLines = ["ABCDEFGHIJKLMNOPQRSTUVWXYZ"]; break;
-            case "LOWER": targetLines = ["abcdefghijklmnopqrstuvwxyz"]; break;
-            case "RAND_UPPER": targetLines = [shuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZ")]; break;
-            case "RAND_LOWER": targetLines = [shuffle("abcdefghijklmnopqrstuvwxyz")]; break;
+            // 產生 50 遍大寫/小寫/隨機字母，約 1300 字元
+            case "UPPER": 
+                targetLines = wrapEnText(generateMassiveLetters("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 50), 50); 
+                break;
+            case "LOWER": 
+                targetLines = wrapEnText(generateMassiveLetters("abcdefghijklmnopqrstuvwxyz", 50), 50); 
+                break;
+            case "RAND_UPPER": 
+                let ru = []; for(let i=0;i<50;i++) ru.push(shuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZ"));
+                targetLines = wrapEnText(ru.join(' '), 50); 
+                break;
+            case "RAND_LOWER": 
+                let rl = []; for(let i=0;i<50;i++) rl.push(shuffle("abcdefghijklmnopqrstuvwxyz"));
+                targetLines = wrapEnText(rl.join(' '), 50); 
+                break;
             case "ARTICLE": 
-                targetLines = wrapEnText(EN_ARTICLES[Math.floor(Math.random() * EN_ARTICLES.length)], 50); 
+                // 英文文章組合成至少 2000 字元
+                targetLines = wrapEnText(generateMassiveArticle(EN_ARTICLES, 2000), 50); 
                 break;
             case "ZH_VOCAB": 
-                // 產生隨機詞彙，每行 25 字
-                targetLines = wrapZhText(generateVocabText(), 25); 
+                // 中文詞彙組合成至少 1000 中文字
+                targetLines = wrapZhText(generateMassiveVocabText(1000), 25); 
                 break;
             case "ZH_ARTICLE": 
-                targetLines = wrapZhText(ZH_ARTICLES[Math.floor(Math.random() * ZH_ARTICLES.length)], 25); 
+                // 中文文章組合成至少 1000 中文字
+                targetLines = wrapZhText(generateMassiveArticle(ZH_ARTICLES, 1000), 25); 
                 break;
         }
         totalCharsCount = targetLines.reduce((sum, line) => sum + line.length, 0);
     }
 
+    // ==========================================
+    // 🎮 遊戲核心邏輯區
+    // ==========================================
     let timeLeft = 0; let totalTime = 0; let timerInterval = null; let isGameRunning = false;
     let stats = { correct: 0, wrong: 0, untyped: 0, speed: 0 };
 
