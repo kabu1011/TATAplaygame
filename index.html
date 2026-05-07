@@ -146,7 +146,7 @@
 </div>
 
 <script>
-    // ★★★ 務必更換你的 Google Script 網址 ★★★
+    // ★★★ 務必更換為你的 Google Apps Script 網址 ★★★
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxy4ScFfE4H_Ct-vx0wOMkQ34r3L-H18V31bCiLdcgtOVpwNaHPMc56VtxawBw_Xe6K/exec"; 
 
     let cloudStudentList = {};
@@ -184,7 +184,6 @@
     function enableSetup() { startBtn.disabled = false; modeSelect.disabled = false; timeSelect.disabled = false; }
     function disableSetup() { startBtn.disabled = true; modeSelect.disabled = true; timeSelect.disabled = true; confirmedName = ""; nameDisplay.textContent = "查無此人，請檢查班級座號"; nameDisplay.style.color = "#c0392b"; }
 
-    // ★ 修改 1：將文章還原為「連續的長篇段落」，不再手動斷行
     const AI_ARTICLES = [
         "The quick brown fox jumps over the lazy dog. This classic sentence contains every letter in the English alphabet. It is often used by typists to test keyboards and warm up their fingers before starting a long day of work.",
         "Computer programming is like solving a giant puzzle. You must carefully put the right logic pieces together to make the software program function correctly. It takes patience, continuous learning, and creative problem-solving skills to succeed.",
@@ -197,7 +196,6 @@
     let targetLines = []; 
     let totalCharsCount = 0; 
     
-    // ★ 新增功能：自動將長篇文章安全地以單字為單位切斷 (設定每行最高 50 字元)
     function wrapText(text, maxLength) {
         const words = text.split(' ');
         let lines = [];
@@ -227,11 +225,9 @@
             case "ARTICLE": 
                 const randomIndex = Math.floor(Math.random() * AI_ARTICLES.length);
                 const articleText = AI_ARTICLES[randomIndex];
-                // 使用程式自動切割長篇文章
                 targetLines = wrapText(articleText, 50); 
                 break;
         }
-        // 計算總字數：將陣列裡的每一行長度加總
         totalCharsCount = targetLines.reduce((sum, line) => sum + line.length, 0);
     }
 
@@ -258,7 +254,6 @@
         targetLines.forEach((line, index) => {
             const div = document.createElement('div');
             div.className = 'line-container';
-            // 給 target-text 加入專屬 ID 方便即時改色
             div.innerHTML = `
                 <div class="target-text" id="target-${index}">${line}</div>
                 <input type="text" class="input-text" id="input-${index}" autocomplete="off" disabled spellcheck="false" maxlength="${line.length + 5}">
@@ -302,7 +297,6 @@
         }, 1000);
     }
 
-    // ★ 修改 2：加入即時變色回饋功能 (灰=對, 紅=錯)
     function calculateScore() {
         if (!isGameRunning) return;
         
@@ -313,7 +307,7 @@
         targetLines.forEach((targetStr, index) => {
             const inputStr = document.getElementById(`input-${index}`).value;
             const targetDiv = document.getElementById(`target-${index}`);
-            let formattedTarget = ""; // 用來組裝變色後的 HTML
+            let formattedTarget = ""; 
             let lineCorrect = 0;
             let lineWrong = 0;
 
@@ -321,32 +315,25 @@
 
             const maxLength = Math.max(targetStr.length, inputStr.length);
             
-            // 逐字比對，賦予不同顏色標籤
             for (let i = 0; i < maxLength; i++) {
                 if (i < targetStr.length && i < inputStr.length) {
                     if (inputStr[i] === targetStr[i]) {
-                        // 打對：變淡灰色
                         formattedTarget += `<span style="color: #bdc3c7;">${targetStr[i]}</span>`;
                         lineCorrect++;
                     } else {
-                        // 打錯：紅底紅字
                         formattedTarget += `<span style="color: #c0392b; background-color: #fadbd8; border-radius: 3px;">${targetStr[i]}</span>`;
                         lineWrong++;
                     }
                 } else if (i < targetStr.length) {
-                    // 還沒打到的字：保持原樣
                     formattedTarget += targetStr[i]; 
                 } else {
-                    // 多打的字：顯示紅色底線
                     let extraChar = inputStr[i] === ' ' ? '_' : inputStr[i];
                     formattedTarget += `<span style="color: #c0392b; text-decoration: underline;">${extraChar}</span>`;
                     lineWrong++;
                 }
             }
 
-            // 即時更新上方的題目畫面
             targetDiv.innerHTML = formattedTarget;
-            
             currentCorrect += lineCorrect;
             currentWrong += lineWrong;
         });
@@ -387,14 +374,16 @@
 
         const idVal = studentInput.value;
         const modeName = modeSelect.options[modeSelect.selectedIndex].text;
-        const finalScore = Math.max(0, (stats.correct * 2) - stats.wrong); 
+        
+        // ★ 100 分滿分制公式
+        const finalScore = Math.max(0, Math.round(((stats.correct - stats.wrong) / totalCharsCount) * 100)); 
 
         document.getElementById('final-stats').innerHTML = `
             姓名：${confirmedName} (${idVal})<br>
             測驗模式：${modeName}<br><hr>
             打字速度：${stats.speed} 字/分<br>
             正確：${stats.correct} / 錯誤：${stats.wrong} / 未打：${stats.untyped}<br>
-            <h3 style="color:#f1c40f">系統計算得分：${finalScore}</h3>
+            <h3 style="color:#f1c40f; font-size: 36px;">總成績：${finalScore} 分</h3>
         `;
 
         const data = { studentId: idVal, name: confirmedName, score: finalScore, correctCount: stats.correct };
