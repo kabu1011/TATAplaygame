@@ -101,8 +101,8 @@
             <label style="font-weight: bold; margin-right: 10px;">測驗模式：</label>
             <select id="mode-select" disabled>
                 <optgroup label="英文測驗">
-                    <option value="UPPER">大寫 A~Z</option>
-                    <option value="LOWER">小寫 a~z</option>
+                    <option value="UPPER">大寫 A~Z (挑戰極速)</option>
+                    <option value="LOWER">小寫 a~z (挑戰極速)</option>
                     <option value="RAND_UPPER">隨機大寫 A~Z</option>
                     <option value="RAND_LOWER">隨機小寫 a~z</option>
                     <option value="ARTICLE">亂數文章 (英文)</option>
@@ -277,7 +277,6 @@
         return lines;
     }
 
-    // ★ 產生巨量隨機詞彙 (確保字數破千，應付 10 分鐘測驗)
     function generateMassiveVocabText(targetLength = 1000) {
         let text = "";
         while (text.length < targetLength) {
@@ -288,10 +287,8 @@
         return text;
     }
 
-    // ★ 產生巨量文章 (將題庫洗牌後拼在一起，確保字數破千)
     function generateMassiveArticle(articlesArray, targetLength) {
         let text = "";
-        // 陣列洗牌打亂
         let shuffled = [...articlesArray].sort(() => 0.5 - Math.random());
         let idx = 0;
         while (text.length < targetLength) {
@@ -301,43 +298,31 @@
         return text.trim();
     }
 
-    // 產生大量重複的英文字母
-    function generateMassiveLetters(str, times) {
-        let arr = [];
-        for (let i = 0; i < times; i++) arr.push(str);
-        return arr.join(' ');
-    }
-
+    // ★ 修改：A~Z 與 a~z 模式現在固定只出現 26 個字母一次！
     function generateTargetText() {
         const mode = modeSelect.value;
         const shuffle = str => str.split('').sort(() => 0.5 - Math.random()).join('');
 
         switch(mode) {
-            // 產生 50 遍大寫/小寫/隨機字母，約 1300 字元
             case "UPPER": 
-                targetLines = wrapEnText(generateMassiveLetters("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 50), 50); 
+                targetLines = ["ABCDEFGHIJKLMNOPQRSTUVWXYZ"]; 
                 break;
             case "LOWER": 
-                targetLines = wrapEnText(generateMassiveLetters("abcdefghijklmnopqrstuvwxyz", 50), 50); 
+                targetLines = ["abcdefghijklmnopqrstuvwxyz"]; 
                 break;
             case "RAND_UPPER": 
-                let ru = []; for(let i=0;i<50;i++) ru.push(shuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZ"));
-                targetLines = wrapEnText(ru.join(' '), 50); 
+                targetLines = [shuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZ")]; 
                 break;
             case "RAND_LOWER": 
-                let rl = []; for(let i=0;i<50;i++) rl.push(shuffle("abcdefghijklmnopqrstuvwxyz"));
-                targetLines = wrapEnText(rl.join(' '), 50); 
+                targetLines = [shuffle("abcdefghijklmnopqrstuvwxyz")]; 
                 break;
             case "ARTICLE": 
-                // 英文文章組合成至少 2000 字元
                 targetLines = wrapEnText(generateMassiveArticle(EN_ARTICLES, 2000), 50); 
                 break;
             case "ZH_VOCAB": 
-                // 中文詞彙組合成至少 1000 中文字
                 targetLines = wrapZhText(generateMassiveVocabText(1000), 25); 
                 break;
             case "ZH_ARTICLE": 
-                // 中文文章組合成至少 1000 中文字
                 targetLines = wrapZhText(generateMassiveArticle(ZH_ARTICLES, 1000), 25); 
                 break;
         }
