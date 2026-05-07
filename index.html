@@ -3,84 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>專業雙語打字測驗系統</title>
+    <title>專業雙語打字檢定系統</title>
     <style>
         body { font-family: "Microsoft JhengHei", Arial, sans-serif; background-color: #f0f0f0; margin: 0; padding: 20px; color: #333; }
         .container { max-width: 1200px; margin: 0 auto; }
         
-        #setup-screen { background-color: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: relative; text-align: center; }
+        /* 設定頁面 */
+        #setup-screen { background-color: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: relative; text-align: center; margin-bottom: 20px; }
         .input-group { margin-bottom: 20px; font-size: 20px; }
-        .input-group input, .input-group select { font-size: 20px; padding: 10px; border-radius: 5px; border: 1px solid #ccc; width: 220px; text-align: center; margin: 5px; }
+        .input-group input, .input-group select { font-size: 20px; padding: 10px; border-radius: 5px; border: 1px solid #ccc; width: 260px; text-align: center; margin: 5px; }
         #student-name-display { font-size: 24px; font-weight: bold; color: #f39c12; display: block; margin-top: 15px; }
-        
-        .time-options { margin-top: 30px; }
         .btn { font-size: 18px; padding: 10px 20px; margin: 5px; cursor: pointer; border: none; border-radius: 5px; background-color: #3498db; color: white; transition: 0.2s; }
         .btn:hover { background-color: #2980b9; }
         .btn:disabled { background-color: #bdc3c7; cursor: not-allowed; }
-
         #loading-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); display: flex; justify-content: center; align-items: center; font-size: 24px; font-weight: bold; z-index: 10; color: #e67e22; border-radius: 10px; }
 
-        #game-screen { display: none; background-color: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        /* 遊戲畫面容器 */
+        #game-screen { display: none; box-shadow: 0 4px 15px rgba(0,0,0,0.3); background-color: #e8daef; padding-bottom: 20px; }
         
-        .top-bar { display: flex; text-align: center; font-size: 18px; font-weight: bold; border-bottom: 2px solid #ccc; background: #eee; }
-        .stat-box { flex: 1; display: flex; align-items: center; border-right: 1px solid #fff; }
-        .stat-label { color: white; padding: 15px 10px; font-size: 16px; white-space: nowrap; }
-        .stat-val { flex: 1; font-size: 36px; padding: 5px 10px; background-color: #f9f9f9; }
+        /* ★ 終極還原：頂部數據列 */
+        .top-bar { display: flex; background: #e0e0e0; border-bottom: 2px solid #ccc; padding: 10px 20px; gap: 15px; }
+        .stat-box { position: relative; flex: 1; display: flex; justify-content: center; align-items: center; height: 60px; font-size: 40px; font-weight: bold; font-family: Arial, sans-serif; box-shadow: inset 0 0 5px rgba(0,0,0,0.1); }
+        .stat-label { position: absolute; top: 0; left: 0; font-size: 12px; font-weight: normal; color: white; padding: 2px 6px; }
         
-        .bg-time { background-color: #2980b9; }
-        .color-time { color: #e67e22; }
-        .bg-correct { background-color: #27ae60; }
-        .color-correct { color: #27ae60; }
-        .bg-wrong { background-color: #c0392b; }
-        .color-wrong { color: #c0392b; }
-        .bg-untyped { background-color: #d35400; }
-        .color-untyped { color: #d35400; }
-        .bg-speed { background-color: #8e44ad; }
-        .color-speed { color: #8e44ad; }
+        /* 各區塊專屬顏色 (還原截圖) */
+        .box-time { background-color: #d6eaf8; color: #e67e22; }
+        .label-time { background-color: #2980b9; }
         
-        .btn-finish { background-color: #7fb3d5; border: none; padding: 0 30px; font-size: 18px; color: white; cursor: pointer; height: 100%; width: 100%; font-weight: bold; }
+        .box-correct { background-color: #d5f5e3; color: #27ae60; }
+        .label-correct { background-color: #27ae60; }
+        
+        .box-wrong { background-color: #fadbd8; color: #c0392b; }
+        .label-wrong { background-color: #c0392b; }
+        
+        .box-untyped { background-color: #fdebd0; color: #d35400; }
+        .label-untyped { background-color: #d35400; }
+        
+        .box-speed { background-color: #ebdef0; color: #2980b9; }
+        .label-speed { background-color: #8e44ad; }
+        
+        .btn-finish { background-color: #85c1e9; border: 1px solid #5dade2; font-size: 18px; color: white; cursor: pointer; height: 60px; width: 100%; font-weight: bold; font-family: "Microsoft JhengHei"; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .btn-finish:hover { background-color: #5dade2; }
 
-        .typing-area { background-color: #ffffcc; padding: 30px; font-family: 'Courier New', Courier, "Microsoft JhengHei", monospace; font-size: 28px; min-height: 400px; overflow-x: auto; }
-        
-        .prep-box { border: 2px dashed #999; padding: 10px; text-align: center; color: #555; background: #fff; margin-bottom: 30px; font-size: 24px; cursor: pointer; font-weight: bold; }
-        .prep-box:hover { background: #f0f0f0; }
+        /* 副標題提示列 */
+        .sub-header { text-align: center; font-size: 15px; padding: 10px; background-color: #fff; border-bottom: 1px solid #ccc; color: #555; }
+        .sub-header span.highlight { color: #e74c3c; font-weight: bold; }
 
-        .line-container { margin-bottom: 20px; min-width: 800px; }
+        /* 打字區域 */
+        .typing-area { background-color: #ffffcc; padding: 20px 40px; margin: 20px; font-family: 'Courier New', Courier, "Microsoft JhengHei", monospace; font-size: 26px; min-height: 400px; overflow-x: auto; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
         
-        .target-text { color: #333; padding-left: 5px; white-space: pre; letter-spacing: 4px; font-weight: bold; }
+        /* 準備區 */
+        .prep-box { border: 2px dashed #8e44ad; padding: 15px; text-align: left; color: #555; background: #fff; margin-bottom: 25px; font-size: 26px; cursor: pointer; font-weight: normal; }
+        .prep-box:hover { background: #f9f9f9; }
+
+        .line-container { margin-bottom: 25px; min-width: 800px; }
         
+        /* 題目與輸入框的排版對齊 */
+        .target-text { color: #333; padding-left: 2px; white-space: pre; letter-spacing: 2px; font-weight: normal; margin-bottom: 5px; }
         .input-text { 
             width: 100%; 
             font-family: 'Courier New', Courier, "Microsoft JhengHei", monospace; 
-            font-size: 28px; 
+            font-size: 26px; 
             background: transparent; 
             border: none; 
             border-bottom: 2px dashed #777; 
             outline: none; 
             color: #2980b9;
-            padding: 5px;
+            padding: 2px;
             box-sizing: border-box;
-            letter-spacing: 4px; 
-            font-weight: bold;
+            letter-spacing: 2px; 
+            font-weight: normal;
         }
-        .input-text:focus { border-bottom: 2px solid #e74c3c; background-color: rgba(255,255,255,0.5); }
+        .input-text:focus { border-bottom: 2px solid #e74c3c; background-color: rgba(255,255,255,0.4); }
         
         .end-mark-btn { 
             border: 2px dashed #999; 
             display: inline-block; 
-            padding: 10px 30px; 
-            margin-top: 20px; 
-            color: #555; 
-            background-color: white;
+            padding: 5px 20px; 
+            margin-top: 10px; 
+            color: #777; 
+            background-color: transparent;
             font-size: 24px;
             font-family: inherit;
-            font-weight: bold;
             cursor: pointer;
             transition: 0.3s;
         }
         .end-mark-btn:hover { background-color: #e74c3c; color: white; border-color: #e74c3c; }
 
+        /* 結果頁面 */
         #result-screen { display: none; background-color: #27ae60; padding: 40px; border-radius: 10px; text-align: center; color: white; margin-top: 20px; }
         #upload-status { margin-top: 20px; font-size: 20px; font-weight: bold; color: #f1c40f; }
     </style>
@@ -101,15 +111,15 @@
             <label style="font-weight: bold; margin-right: 10px;">測驗模式：</label>
             <select id="mode-select" disabled>
                 <optgroup label="英文測驗">
-                    <option value="UPPER">大寫 A~Z (挑戰極速)</option>
-                    <option value="LOWER">小寫 a~z (挑戰極速)</option>
-                    <option value="RAND_UPPER">隨機大寫 A~Z</option>
-                    <option value="RAND_LOWER">隨機小寫 a~z</option>
-                    <option value="ARTICLE">亂數文章 (英文)</option>
+                    <option value="UPPER">大寫 A~Z (極速測驗)</option>
+                    <option value="LOWER">小寫 a~z (極速測驗)</option>
+                    <option value="EN_ARTICLE_FIXED">英文文章 (定量：依時間給定字數)</option>
+                    <option value="ARTICLE">英文文章 (無限長度)</option>
                 </optgroup>
                 <optgroup label="中文測驗">
-                    <option value="ZH_VOCAB">隨機詞彙 (中文題庫)</option>
-                    <option value="ZH_ARTICLE" selected>亂數文章 (中文題庫)</option>
+                    <option value="ZH_ARTICLE_FIXED" selected>中文文章 (定量：依時間給定字數)</option>
+                    <option value="ZH_VOCAB">隨機詞彙 (無限長度)</option>
+                    <option value="ZH_ARTICLE">亂數文章 (無限長度)</option>
                 </optgroup>
             </select>
             
@@ -128,16 +138,21 @@
 
     <div id="game-screen">
         <div class="top-bar">
-            <div class="stat-box"><div class="stat-label bg-time">時間</div><div class="stat-val color-time" id="timer">--:--</div></div>
-            <div class="stat-box"><div class="stat-label bg-correct">正確</div><div class="stat-val color-correct" id="val-correct">0</div></div>
-            <div class="stat-box"><div class="stat-label bg-wrong">錯誤</div><div class="stat-val color-wrong" id="val-wrong">0</div></div>
-            <div class="stat-box"><div class="stat-label bg-untyped">沒打</div><div class="stat-val color-untyped" id="val-untyped">0</div></div>
-            <div class="stat-box"><div class="stat-label bg-speed">速度</div><div class="stat-val color-speed" id="val-speed">0</div></div>
-            <div class="stat-box" style="border:none; padding: 0;"><button class="btn-finish" onclick="forceEndGame()">查看成績</button></div>
+            <div class="stat-box box-time"><div class="stat-label label-time">時間</div><span id="timer">--:--</span></div>
+            <div class="stat-box box-correct"><div class="stat-label label-correct">正確</div><span id="val-correct">0</span></div>
+            <div class="stat-box box-wrong"><div class="stat-label label-wrong">錯誤</div><span id="val-wrong">0</span></div>
+            <div class="stat-box box-untyped"><div class="stat-label label-untyped">沒打</div><span id="val-untyped">0</span></div>
+            <div class="stat-box box-speed"><div class="stat-label label-speed">速度</div><span id="val-speed">0</span></div>
+            <div style="flex: 0.8;"><button class="btn-finish" onclick="forceEndGame()">查看成績</button></div>
+        </div>
+        
+        <div class="sub-header">
+            本篇共 <span class="highlight" id="display-total-chars">0</span> 字元（含標點符號，不含空白及換行字元） &nbsp;&nbsp;&nbsp; 
+            <span class="highlight">小叮嚀：按 ⏎ 切換至下一個輸入區</span>
         </div>
 
         <div class="typing-area">
-            <div class="prep-box" id="prep-box" onclick="startGameTimer()">準備區：點擊此處，或按 Enter 開始計時</div>
+            <div class="prep-box" id="prep-box" onclick="startGameTimer()">準備區：在這裡調整輸入法，按 enter 開始計時</div>
             <div id="text-lines-container"></div>
             <button class="end-mark-btn" onclick="forceEndGame()">[ 結 束 ]</button>
         </div>
@@ -191,7 +206,7 @@
     function disableSetup() { startBtn.disabled = true; modeSelect.disabled = true; timeSelect.disabled = true; confirmedName = ""; nameDisplay.textContent = "查無此人，請檢查班級座號"; nameDisplay.style.color = "#c0392b"; }
 
     // ==========================================
-    // 📚 雙語龐大題庫區
+    // 📚 題庫資料區 (30篇中文 / 10篇英文 / 詞彙)
     // ==========================================
     const EN_ARTICLES = [
         "The quick brown fox jumps over the lazy dog. This classic sentence contains every letter in the English alphabet.",
@@ -277,7 +292,7 @@
         return lines;
     }
 
-    function generateMassiveVocabText(targetLength = 1000) {
+    function generateMassiveVocabText(targetLength) {
         let text = "";
         while (text.length < targetLength) {
             let word1 = ZH_WORDS[Math.floor(Math.random() * ZH_WORDS.length)];
@@ -298,9 +313,9 @@
         return text.trim();
     }
 
-    // ★ 修改：A~Z 與 a~z 模式現在固定只出現 26 個字母一次！
     function generateTargetText() {
         const mode = modeSelect.value;
+        const timeMin = parseInt(timeSelect.value);
         const shuffle = str => str.split('').sort(() => 0.5 - Math.random()).join('');
 
         switch(mode) {
@@ -316,17 +331,32 @@
             case "RAND_LOWER": 
                 targetLines = [shuffle("abcdefghijklmnopqrstuvwxyz")]; 
                 break;
+            
+            // 定量文章：根據時間給定合理字數 (防作弊計分專用)
+            case "EN_ARTICLE_FIXED": 
+                let targetEnCount = timeMin * 150; // 每分鐘 150 個英文字母
+                targetLines = wrapEnText(generateMassiveArticle(EN_ARTICLES, targetEnCount).substring(0, targetEnCount), 50); 
+                break;
+            case "ZH_ARTICLE_FIXED": 
+                let targetZhCount = timeMin * 50;  // 每分鐘 50 個中文字
+                targetLines = wrapZhText(generateMassiveArticle(ZH_ARTICLES, targetZhCount).substring(0, targetZhCount), 25); 
+                break;
+
+            // 無限長度模式
             case "ARTICLE": 
-                targetLines = wrapEnText(generateMassiveArticle(EN_ARTICLES, 2000), 50); 
+                targetLines = wrapEnText(generateMassiveArticle(EN_ARTICLES, 2500), 50); 
                 break;
             case "ZH_VOCAB": 
-                targetLines = wrapZhText(generateMassiveVocabText(1000), 25); 
+                targetLines = wrapZhText(generateMassiveVocabText(1500), 25); 
                 break;
             case "ZH_ARTICLE": 
-                targetLines = wrapZhText(generateMassiveArticle(ZH_ARTICLES, 1000), 25); 
+                targetLines = wrapZhText(generateMassiveArticle(ZH_ARTICLES, 1500), 25); 
                 break;
         }
+        
+        // 精準計算總字元數 (更新副標題顯示)
         totalCharsCount = targetLines.reduce((sum, line) => sum + line.length, 0);
+        document.getElementById('display-total-chars').textContent = totalCharsCount;
     }
 
     // ==========================================
@@ -381,7 +411,7 @@
                     e.preventDefault();
                     const nextInput = document.getElementById(`input-${index + 1}`);
                     if (nextInput) nextInput.focus();
-                    else forceEndGame();
+                    else forceEndGame(); // 最後一行按 Enter 結束
                 }
             });
         });
@@ -457,6 +487,7 @@
         
         updateTopBar();
 
+        // 打完定量字數自動結束
         if (allFinished && stats.correct === totalCharsCount) {
             setTimeout(forceEndGame, 200); 
         }
@@ -486,9 +517,24 @@
         document.getElementById('result-screen').style.display = 'block';
 
         const idVal = studentInput.value;
+        const mode = modeSelect.value;
         const modeName = modeSelect.options[modeSelect.selectedIndex].text;
         
-        const finalScore = Math.max(0, Math.round(((stats.correct - stats.wrong) / totalCharsCount) * 100)); 
+        let finalScore = 0;
+        let typedCount = stats.correct + stats.wrong;
+
+        // ★ 終極防作弊計分法 (適用於定量文章與 26 字母模式)
+        if (mode.includes("FIXED") || mode === "UPPER" || mode === "LOWER" || mode === "RAND_UPPER" || mode === "RAND_LOWER") {
+            // (正確字數 / 系統給定總字數) * 100
+            finalScore = Math.max(0, Math.round((stats.correct / totalCharsCount) * 100));
+        } else {
+            // 無限長度模式 (純練手速用)：(正確字數 / 實際打出字數) * 100
+            if (typedCount >= 10) {
+                finalScore = Math.max(0, Math.round((stats.correct / typedCount) * 100));
+            } else {
+                finalScore = 0; 
+            }
+        }
 
         document.getElementById('final-stats').innerHTML = `
             姓名：${confirmedName} (${idVal})<br>
