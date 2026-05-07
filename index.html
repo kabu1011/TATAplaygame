@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>專業打字測驗系統</title>
+    <title>專業雙語打字測驗系統</title>
     <style>
         body { font-family: "Microsoft JhengHei", Arial, sans-serif; background-color: #f0f0f0; margin: 0; padding: 20px; color: #333; }
         .container { max-width: 1200px; margin: 0 auto; }
         
         #setup-screen { background-color: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: relative; text-align: center; }
         .input-group { margin-bottom: 20px; font-size: 20px; }
-        .input-group input, .input-group select { font-size: 20px; padding: 10px; border-radius: 5px; border: 1px solid #ccc; width: 200px; text-align: center; margin: 5px; }
+        .input-group input, .input-group select { font-size: 20px; padding: 10px; border-radius: 5px; border: 1px solid #ccc; width: 220px; text-align: center; margin: 5px; }
         #student-name-display { font-size: 24px; font-weight: bold; color: #f39c12; display: block; margin-top: 15px; }
         
         .time-options { margin-top: 30px; }
@@ -41,7 +41,7 @@
         .btn-finish { background-color: #7fb3d5; border: none; padding: 0 30px; font-size: 18px; color: white; cursor: pointer; height: 100%; width: 100%; font-weight: bold; }
         .btn-finish:hover { background-color: #5dade2; }
 
-        .typing-area { background-color: #ffffcc; padding: 30px; font-family: 'Courier New', Courier, monospace; font-size: 28px; min-height: 400px; overflow-x: auto; }
+        .typing-area { background-color: #ffffcc; padding: 30px; font-family: 'Courier New', Courier, "Microsoft JhengHei", monospace; font-size: 28px; min-height: 400px; overflow-x: auto; }
         
         .prep-box { border: 2px dashed #999; padding: 10px; text-align: center; color: #555; background: #fff; margin-bottom: 30px; font-size: 24px; cursor: pointer; font-weight: bold; }
         .prep-box:hover { background: #f0f0f0; }
@@ -52,7 +52,7 @@
         
         .input-text { 
             width: 100%; 
-            font-family: 'Courier New', Courier, monospace; 
+            font-family: 'Courier New', Courier, "Microsoft JhengHei", monospace; 
             font-size: 28px; 
             background: transparent; 
             border: none; 
@@ -90,7 +90,7 @@
 <div class="container">
     <div id="setup-screen">
         <div id="loading-overlay">⏳ 正在與 Google 雲端連線下載名單...</div>
-        <h2>📝 專業打字測驗系統</h2>
+        <h2>📝 專業雙語打字測驗系統</h2>
         
         <div class="input-group">
             <input type="number" id="student-id" placeholder="班級座號 (如: 30101)" autocomplete="off" disabled>
@@ -100,11 +100,17 @@
         <div class="input-group" style="margin-top: 30px; background: #f9f9f9; padding: 20px; border-radius: 10px;">
             <label style="font-weight: bold; margin-right: 10px;">測驗模式：</label>
             <select id="mode-select" disabled>
-                <option value="UPPER">大寫 A~Z</option>
-                <option value="LOWER">小寫 a~z</option>
-                <option value="RAND_UPPER">隨機大寫 A~Z</option>
-                <option value="RAND_LOWER">隨機小寫 a~z</option>
-                <option value="ARTICLE">亂數文章 (AI 題庫)</option>
+                <optgroup label="英文測驗">
+                    <option value="UPPER">大寫 A~Z</option>
+                    <option value="LOWER">小寫 a~z</option>
+                    <option value="RAND_UPPER">隨機大寫 A~Z</option>
+                    <option value="RAND_LOWER">隨機小寫 a~z</option>
+                    <option value="ARTICLE">亂數文章 (英文)</option>
+                </optgroup>
+                <optgroup label="中文測驗">
+                    <option value="ZH_VOCAB">隨機詞彙 (中文題庫)</option>
+                    <option value="ZH_ARTICLE" selected>亂數文章 (中文題庫)</option>
+                </optgroup>
             </select>
             
             <br><br>
@@ -184,33 +190,70 @@
     function enableSetup() { startBtn.disabled = false; modeSelect.disabled = false; timeSelect.disabled = false; }
     function disableSetup() { startBtn.disabled = true; modeSelect.disabled = true; timeSelect.disabled = true; confirmedName = ""; nameDisplay.textContent = "查無此人，請檢查班級座號"; nameDisplay.style.color = "#c0392b"; }
 
-    const AI_ARTICLES = [
-        "The quick brown fox jumps over the lazy dog. This classic sentence contains every letter in the English alphabet. It is often used by typists to test keyboards and warm up their fingers before starting a long day of work.",
-        "Computer programming is like solving a giant puzzle. You must carefully put the right logic pieces together to make the software program function correctly. It takes patience, continuous learning, and creative problem-solving skills to succeed.",
-        "Walking through the quiet forest is a relaxing experience. The warm sunlight shines gently through the green canopy. Listening to the wind helps students calm their minds and prepare for another wonderful day of learning in the beautiful nature.",
-        "Why do software developers always mix up Halloween and Christmas? Because Oct 31 is exactly equal to Dec 25 in mathematical bases. If you understand this classic programmer joke, you are definitely well on your way to becoming a true computer geek!",
-        "Developing a fast typing speed takes a lot of time and consistent practice. Try your best not to look at the keyboard while you are typing. Your muscle memory will eventually guide your fingers to find the correct keys automatically.",
-        "Artificial intelligence is rapidly changing the whole world around us. From self-driving cars to smart voice assistants in our homes, new technological tools are everywhere. Learning how to use them effectively is an important skill for the future."
+    const EN_ARTICLES = [
+        "The quick brown fox jumps over the lazy dog. This classic sentence contains every letter in the English alphabet.",
+        "Computer programming is like solving a giant puzzle. You must carefully put the right logic pieces together to make the software function.",
+        "Artificial intelligence is rapidly changing the whole world around us. From self-driving cars to smart voice assistants in our homes.",
+        "A fast typing speed takes a lot of time and consistent practice. Try your best not to look at the keyboard while you are typing.",
+        "Walking through the quiet forest is a relaxing experience. The warm sunlight shines gently through the green canopy."
+    ];
+
+    // ★ 擴充版：中文優美文章題庫 (10篇)
+    const ZH_ARTICLES = [
+        "早晨的陽光穿透樹葉，灑在森林小學的教室裡。微風輕輕吹過，伴隨著蟲鳴鳥叫，讓學生們能在充滿大自然氣息的環境中，靜下心來展開一天的學習旅程。",
+        "學習程式設計就像是在施展魔法。透過迴圈與變數的組合，我們能讓電腦聽從指令，甚至創造出有趣的小遊戲。只要具備清晰的邏輯，每個人都能成為優秀的創作者。",
+        "古希臘哲學家蘇格拉底曾說過，我唯一知道的事，就是我什麼都不知道。保持一顆好奇與謙卑的心去探索世界，不斷提出問題，才是獲取真實知識與智慧的最佳途徑。",
+        "在人工智慧快速發展的時代，科技正在改變我們的生活方式。從自動駕駛到智慧教學平台，未來的世界充滿無限可能。我們應該擁抱新技術，並學習如何善用它們。",
+        "閱讀是一扇通往世界的窗戶。透過書本，我們可以跨越時空的限制，與古今中外的智者進行對話。在字裡行間尋找智慧的結晶，豐富我們的心靈與視野。",
+        "每個人都會有害怕的事情，比如黑暗或是高處。克服恐懼的第一步是了解它，想想為什麼會害怕。接著可以試著慢慢接觸這些事情，勇敢面對恐懼會讓你變得更加自信。",
+        "哪怕前方的道路佈滿荊棘，只要心中有光，就能照亮未來的方向。每一次的失敗，都是通往成功的一塊墊腳石。勇敢面對挑戰，你將會發現一個更強大的自己。",
+        "搭上神隱少女的神秘列車，或是跟著龍貓在夜晚的森林裡翱翔。豐富的想像力是創新的泉源，它能帶領我們跨越現實的框架，看見更多不一樣的奇妙世界。",
+        "團隊合作是達成偉大目標的關鍵。每個人都有自己獨特的優點與專長，像拼圖一樣互補不足。學會傾聽他人的意見，包容不同的想法，才能發揮出一加一大於二的力量。",
+        "時間就像一條奔流不息的河，過去了就不會再回來。學會做好時間管理，把每天的任務安排得井然有序。珍惜每一分每一秒，不要讓寶貴的青春在猶豫中白白流逝。"
+    ];
+
+    // ★ 新增：中文隨機詞彙庫 (雙字詞與四字成語混合)
+    const ZH_WORDS = [
+        "學習", "成長", "努力", "堅持", "未來", "夢想", "希望", "挑戰", "成功", "自信",
+        "科技", "創新", "程式", "設計", "網路", "雲端", "資料", "邏輯", "系統", "資訊",
+        "自然", "森林", "海洋", "陽光", "微風", "宇宙", "星空", "山川", "河流", "生態",
+        "行雲流水", "腳踏實地", "百折不撓", "聚沙成塔", "持之以恆", "溫故知新", "精益求精", "學無止境"
     ];
 
     let targetLines = []; 
     let totalCharsCount = 0; 
     
-    function wrapText(text, maxLength) {
+    function wrapEnText(text, maxLength) {
         const words = text.split(' ');
-        let lines = [];
-        let currentLine = "";
-
+        let lines = []; let currentLine = "";
         words.forEach(word => {
             if ((currentLine + word).length > maxLength) {
-                lines.push(currentLine.trim());
-                currentLine = word + " ";
-            } else {
-                currentLine += word + " ";
-            }
+                lines.push(currentLine.trim()); currentLine = word + " ";
+            } else { currentLine += word + " "; }
         });
         if (currentLine.trim().length > 0) lines.push(currentLine.trim());
         return lines;
+    }
+
+    function wrapZhText(text, maxLength) {
+        let lines = [];
+        for (let i = 0; i < text.length; i += maxLength) {
+            lines.push(text.substring(i, i + maxLength));
+        }
+        return lines;
+    }
+
+    // ★ 新增：隨機生成順暢的中文詞彙短句
+    function generateVocabText() {
+        let text = "";
+        // 生成大約 60 個字的長度，以符合一般測驗需求
+        for (let i = 0; i < 15; i++) {
+            let word1 = ZH_WORDS[Math.floor(Math.random() * ZH_WORDS.length)];
+            let word2 = ZH_WORDS[Math.floor(Math.random() * ZH_WORDS.length)];
+            // 讓詞彙組合起來像是一句通順的話
+            text += `${word1}，${word2}。`; 
+        }
+        return text;
     }
 
     function generateTargetText() {
@@ -223,9 +266,14 @@
             case "RAND_UPPER": targetLines = [shuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZ")]; break;
             case "RAND_LOWER": targetLines = [shuffle("abcdefghijklmnopqrstuvwxyz")]; break;
             case "ARTICLE": 
-                const randomIndex = Math.floor(Math.random() * AI_ARTICLES.length);
-                const articleText = AI_ARTICLES[randomIndex];
-                targetLines = wrapText(articleText, 50); 
+                targetLines = wrapEnText(EN_ARTICLES[Math.floor(Math.random() * EN_ARTICLES.length)], 50); 
+                break;
+            case "ZH_VOCAB": 
+                // 產生隨機詞彙，每行 25 字
+                targetLines = wrapZhText(generateVocabText(), 25); 
+                break;
+            case "ZH_ARTICLE": 
+                targetLines = wrapZhText(ZH_ARTICLES[Math.floor(Math.random() * ZH_ARTICLES.length)], 25); 
                 break;
         }
         totalCharsCount = targetLines.reduce((sum, line) => sum + line.length, 0);
@@ -261,10 +309,22 @@
             container.appendChild(div);
 
             const inputField = div.querySelector('input');
-            inputField.addEventListener('input', calculateScore);
+            let isComposing = false; 
+
+            inputField.addEventListener('compositionstart', () => { isComposing = true; });
+            inputField.addEventListener('compositionend', () => { 
+                isComposing = false; 
+                calculateScore(); 
+            });
+
+            inputField.addEventListener('input', () => {
+                if (!isComposing) calculateScore(); 
+            });
             
             inputField.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter') {
+                    if (isComposing) return; // 防止注音選字時跳行
+                    
                     e.preventDefault();
                     const nextInput = document.getElementById(`input-${index + 1}`);
                     if (nextInput) nextInput.focus();
@@ -375,7 +435,6 @@
         const idVal = studentInput.value;
         const modeName = modeSelect.options[modeSelect.selectedIndex].text;
         
-        // ★ 100 分滿分制公式
         const finalScore = Math.max(0, Math.round(((stats.correct - stats.wrong) / totalCharsCount) * 100)); 
 
         document.getElementById('final-stats').innerHTML = `
